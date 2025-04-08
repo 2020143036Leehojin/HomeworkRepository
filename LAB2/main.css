@@ -1,0 +1,42 @@
+body{
+    background-color: aliceblue;
+    text-align: center;
+    margin: auto;
+    font-size:10pt;
+    font-family: Arial, Helvetica, sans-serif;
+    color:black;
+
+}
+
+h1{
+    font-size: large;
+}
+
+.box{
+    text-align:left;
+    width:400px;
+    height:380px;
+    margin:auto;
+    border: 3px solid black; padding: 5px 20px;
+}
+
+.small-box{
+    width:300px;
+    height:150px;
+}
+
+#submit{
+    background-color:green;
+    font-size: 12pt;
+    border-radius: 5%;
+    color:white;
+
+}
+
+#cancel{
+    background-color: red;
+    font-size: 12pt;
+    border-radius: 5%;
+    color:white;
+
+}
