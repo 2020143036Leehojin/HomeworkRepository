@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie Main Page</title>
+  <link rel="stylesheet" type="text/css" href="main.css">
+  <style>
+    html, body {
+      height: auto;
+      min-height: 100vh;
+    }
+    .movies-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      justify-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1 class="slide-text">Welcome to INTERNET-PROGRAMMING MOVIE SITE</h1>
+    </header>
+
+    <nav class="navbar">
+      <a href="index.html">메인페이지</a>
+      <a href="Login.html">로그인</a>
+      <a href="signup.html">회원가입</a>
+    </nav>
+
+    <div class="search-sort-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="영화 제목 검색...">
+      <select id="sortSelect" class="sort-select">
+        <option value="title">제목순</option>
+        <option value="rating">평점순</option>
+        <option value="year">연도순</option>
+        <option value="popularity">인기도순</option>
+      </select>
+    </div>
+
+    <main class="main-content">
+      <section class="movies-section">
+        <div class="movies-title">Movies</div>
+        <div class="movies-container" id="movieContainer"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let allMovies = [];
+    let filteredMovies = [];
+    let displayed = 0;
+    const pageSize = 6;
+    let loading = false;
+
+    function renderMovies(mList) {
+      const container = document.getElementById("movieContainer");
+      mList.forEach(movie => {
+        const box = document.createElement("div");
+        box.className = "movie-box";
+        box.innerHTML = `
+          <div class="movie-img">
+            <img src="${movie.image}" alt="${movie.title}" onerror="this.onerror=null; this.src='placeholder.jpg';">
+            <div class="movie-title">${movie.title}</div>
+            <div class="movie-desc">${movie.overview || "줄거리 정보 없음"}</div>
+          </div>
+          <div class="movie-title">${movie.title}</div>
+          <div>${movie.year} | 평점: ${movie.rating}</div>
+        `;
+        container.appendChild(box);
+      });
+    }
+
+    function loadMore() {
+      if (loading || displayed >= filteredMovies.length) return;
+      loading = true;
+      const next = filteredMovies.slice(displayed, displayed + pageSize);
+      renderMovies(next);
+      displayed += next.length;
+      loading = false;
+    }
+
+    function applyFilterSort() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+      const sort = document.getElementById("sortSelect").value;
+
+      filteredMovies = allMovies.filter(m => m.title && m.title.toLowerCase().includes(keyword));
+
+      if (sort === "title") filteredMovies.sort((a, b) => a.title.localeCompare(b.title));
+      else if (sort === "rating") filteredMovies.sort((a, b) => b.rating - a.rating);
+      else if (sort === "year") filteredMovies.sort((a, b) => b.year - a.year);
+      else if (sort === "popularity") filteredMovies.sort((a, b) => b.popularity - a.popularity);
+
+      document.getElementById("movieContainer").innerHTML = "";
+      displayed = 0;
+      loadMore();
+    }
+
+    document.getElementById("searchInput").addEventListener("input", applyFilterSort);
+    document.getElementById("sortSelect").addEventListener("change", applyFilterSort);
+
+    window.addEventListener("scroll", () => {
+      if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 10) {
+        loadMore();
+      }
+    });
+
+    fetch("product.json")
+      .then(res => res.json())
+      .then(data => {
+        allMovies = data;
+        applyFilterSort();
+      });
+  </script>
+</body>
+</html>
